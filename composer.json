@@ -1,0 +1,30 @@
+{
+  "name": "selfiens/property-alias",
+  "description": "Enables property alias via ClassDoc",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Kita",
+      "homepage": "https://github.com/selfiens"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/selfiens/property-alias/issues"
+  },
+  "autoload": {
+    "psr-4": {
+      "Selfiens\\PropertyAlias\\Examples\\": "examples/",
+      "Selfiens\\PropertyAlias\\": "src/"
+    },
+    "files": [
+      "src/functions.php"
+    ]
+  },
+  "require": {
+    "php": ">=8.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.0"
+  }
+}
