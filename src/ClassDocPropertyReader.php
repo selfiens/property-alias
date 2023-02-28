@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Selfiens\PropertyAlias;
 
 use ReflectionClass;
-use ReflectionException;
 
 /**
  * Reads (at)property lines from ClassDocs of class hierarchy
