@@ -1,17 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Selfiens\PropertyAlias;
 
 use ReflectionClass;
 use ReflectionException;
 
+/**
+ * Reads (at)property lines from ClassDocs of class hierarchy
+ */
 class ClassDocPropertyReader
 {
     private array $properties;
 
     /**
      * @param  $classNameOrInstance
-     * @throws ReflectionException
      */
     public function __construct($classNameOrInstance)
     {
@@ -19,7 +23,7 @@ class ClassDocPropertyReader
 
         $defs = [];
         do {
-            $doc_comment = $ref->getDocComment();
+            $doc_comment = $ref->getDocComment() ?: "";
             if (preg_match_all(
                 '/\*\s+@property(?<type>\s+[a-zA-Z]\w+)?\s+\$(?<alias>[^ =]+)(?<desc>.*$)?/m',
                 $doc_comment,

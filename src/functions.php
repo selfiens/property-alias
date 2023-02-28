@@ -1,28 +1,65 @@
 <?php
+declare(strict_types=1);
 
 namespace Selfiens\PropertyAlias;
 
-function pipe($data, ...$fns)
+/**
+ * Collection of sidekick functions
+ */
+
+/**
+ * Pass data through functions
+ * @param mixed $data
+ * @param ...$fns
+ * @return mixed
+ */
+function pipe(mixed $data, ...$fns): mixed
 {
     return \array_reduce($fns, fn($data, $fn) => $fn($data), $data);
 }
 
-function map($array, $callable): array
+/**
+ * An alias of array_map with different signature
+ * @param array $array
+ * @param callable $callable
+ * @return array
+ */
+function map(array $array, callable $callable): array
 {
     return \array_map($callable, $array);
 }
 
-function mapKeyValue($array, $callable): array
+/**
+ * Maps key and value
+ * @param iterable $iterable
+ * @param callable $callable fn($key, $value)
+ * @return array
+ */
+function mapKeyValue(iterable $iterable, callable $callable): array
 {
     $result = [];
-    foreach ($array as $key => $value) {
+    foreach ($iterable as $key => $value) {
         [$k, $v] = $callable($key, $value);
         $result[$k] = $v;
     }
     return $result;
 }
 
-function filter($array, $callable): array
+/**
+ * An alias of array_filter
+ * @param array $array
+ * @param callable $callable
+ * @return array
+ */
+function filter(array $array, callable $callable): array
 {
     return \array_filter($array, $callable);
+}
+
+function pregMatcher(string $regexp, string $subject): array
+{
+    if (preg_match($regexp, $subject, $matches)) {
+        return $matches;
+    }
+    return [];
 }
