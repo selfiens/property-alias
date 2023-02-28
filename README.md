@@ -26,6 +26,12 @@ $my->zzz = 'bar'; // write via alias
 assert($my->incmAggrgtd == 'bar');
 ```
 
+## Install
+
+```sh
+composer require selfiens/property-alias:^1.0
+```
+
 ## Setup
 
 This package's `\Selfiens\PropertyAliasTrait` utilizes ClassDoc as a source of definitions.
@@ -37,16 +43,16 @@ You can create aliases using the `@property` syntax, as shown in the following e
  */
 ```
 
-## Why
+## Background
 
-### Why alias an existing property?
+### Why create aliases an existing properties?
 
-This package aims to assist in accessing poorly named properties by better 'alias' names.
+This package aims to assist in accessing poorly named properties by better names.
 It is designed to help in situations where you are unable to rename a property
-due to reasons such as its origin from an ex-employee, an external
+due to reasons such as its origin from an external
 API, a poorly named database field, or the high risk associated with refactoring the name.
 
-### Why ClassDoc @property?
+### Why define aliases in ClassDoc with @property?
 
 The `@property` definitions in ClassDoc are understood by many IDEs,
 and these IDEs will provide auto-completions and refactorings as if the aliases were real properties.
