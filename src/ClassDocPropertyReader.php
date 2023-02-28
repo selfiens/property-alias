@@ -12,6 +12,9 @@ use ReflectionException;
  */
 class ClassDocPropertyReader
 {
+    /**
+     * @var array<string,array{type:string,desc:string}>
+     */
     private array $properties;
 
     /**

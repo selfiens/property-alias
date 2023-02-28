@@ -14,15 +14,13 @@ trait PropertyAliasTrait
     public function __get($alias)
     {
         if (class_parents($this, false) && is_callable(['parent', '__isset'])) {
-            $isset = ['parent', '__isset']($alias);
-            if ($isset) {
+            if (['parent', '__isset']($alias)) {
                 return ['parent', '__get']($alias);
             }
         }
 
         $this->preparePropertyAliasMap();
         $property = $this->_property_aliases[$alias] ?? null;
-
         if ($property) {
             return $this->{$property};
         }
@@ -52,8 +50,7 @@ trait PropertyAliasTrait
     public function __isset($alias)
     {
         if (is_callable(['parent', '__isset'])) {
-            $isset = ['parent', '__isset']($alias);
-            if ($isset) {
+            if (['parent', '__isset']($alias)) {
                 return true;
             }
         }
