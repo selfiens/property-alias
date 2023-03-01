@@ -2,9 +2,10 @@
 
 [![CI Status](https://github.com/selfiens/property-alias/actions/workflows/ci.yml/badge.svg)](https://github.com/selfiens/property-alias/actions)
 
-This package enables you to create aliases for existing class properties with a simple ClassDoc setup. For example,
-instead of accessing the poorly name property `$this->incmAggrgtd`,
-you can access it using the alias `$this->income_aggregated`.
+This package enables you to create aliases for existing class properties with a simple ClassDoc setup.
+For example,
+instead of directly accessing a hard-to-pronounce property `$this->incmAggrgtd`,
+you can add an nicer alias `$this->income_aggregated` to it.
 
 ```php
 /**
@@ -45,14 +46,14 @@ You can create aliases using the `@property` syntax, as shown in the following e
 
 ## Background
 
-### Why create aliases an existing properties?
+### Aliases on existing properties
 
 This package aims to assist in accessing poorly named properties by better names.
 It is designed to help in situations where you are unable to rename a property
 due to reasons such as its origin from an external
 API, a poorly named database field, or the high risk associated with refactoring the name.
 
-### Why define aliases in ClassDoc with @property?
+### Defining aliases in ClassDoc with @property
 
 The `@property` definitions in ClassDoc are understood by many IDEs,
 and these IDEs will provide auto-completions and refactorings as if the aliases were real properties.
