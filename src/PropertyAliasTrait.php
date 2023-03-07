@@ -1,5 +1,8 @@
 <?php
 
+/** @noinspection PhpMultipleClassDeclarationsInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+
 declare(strict_types=1);
 
 namespace Selfiens\PropertyAlias;
@@ -15,7 +18,7 @@ trait PropertyAliasTrait
     {
         if (class_parents($this, false) && is_callable(['parent', '__isset'])) {
             if (['parent', '__isset']($alias)) {
-                return ['parent', '__get']($alias);
+                return parent::__get($alias);
             }
         }
 
@@ -40,7 +43,7 @@ trait PropertyAliasTrait
         }
 
         if (is_callable(['parent', '__set'])) {
-            ['parent', '__set']($alias, $value);
+            parent::__set($alias, $value);
             return;
         }
 
@@ -50,7 +53,7 @@ trait PropertyAliasTrait
     public function __isset($alias)
     {
         if (is_callable(['parent', '__isset'])) {
-            if (['parent', '__isset']($alias)) {
+            if (parent::__isset($alias)) {
                 return true;
             }
         }
