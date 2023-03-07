@@ -18,7 +18,7 @@ trait PropertyAliasTrait
     public function __get($alias)
     {
         if (class_parents($this, false) && is_callable(['parent', '__isset'])) {
-            if (['parent', '__isset']($alias)) {
+            if (parent::__isset($alias)) {
                 return parent::__get($alias);
             }
         }
