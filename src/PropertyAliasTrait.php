@@ -1,6 +1,7 @@
 <?php
 
 /** @noinspection PhpMultipleClassDeclarationsInspection */
+
 /** @noinspection PhpUndefinedMethodInspection */
 
 declare(strict_types=1);
@@ -75,6 +76,31 @@ trait PropertyAliasTrait
     {
         $this->preparePropertyAliasMap();
         return $this->_property_aliases;
+    }
+
+
+    /**
+     * Convert array keys to non-aliased keys
+     * @param array<string|int,mixed> $kvp
+     * @return array<string|int,mixed>
+     */
+    public function unaliasProperties(array $kvp): array
+    {
+        return mapKeyValue($kvp, fn($name, $value) => [$this->unaliasPropertyName($name), $value]);
+    }
+
+    /**
+     * Return non-aliased property name
+     * @param string $name
+     * @return string
+     */
+    public function unaliasPropertyName(string $name): string
+    {
+        if (array_key_exists($name, $this->_property_aliases)) {
+            $unaliased = $this->_property_aliases[$name];
+            return $this->unaliasPropertyName($unaliased);
+        }
+        return $name;
     }
 
     protected function preparePropertyAliasMap(): void

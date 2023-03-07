@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Selfiens\PropertyAlias;
@@ -40,7 +41,11 @@ function mapKeyValue(iterable $iterable, callable $callable): array
     $result = [];
     foreach ($iterable as $key => $value) {
         [$k, $v] = $callable($key, $value);
-        $result[$k] = $v;
+        if ($k === null) {
+            $result[] = $v;
+        } else {
+            $result[$k] = $v;
+        }
     }
     return $result;
 }
