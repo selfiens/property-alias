@@ -72,17 +72,17 @@ trait PropertyAliasTrait
         // currently processing $name
         static $processingName = "";
 
-        // Do not allow the same "$name" enters this method consecutively
-        // via the last __unset() statement in this method.
-        if ($processingName === $name) {
-            return;
-        }
-
         if (is_callable(['parent', '__isset'])) {
             if (parent::__isset($name)) {
                 parent::__unset($name);
                 return;
             }
+        }
+
+        // Do not allow the same "$name" enters this method consecutively
+        // via the last __unset() statement in this method.
+        if ($processingName === $name) {
+            return;
         }
 
         $this->preparePropertyAliasMap();
