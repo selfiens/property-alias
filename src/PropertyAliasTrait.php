@@ -69,6 +69,15 @@ trait PropertyAliasTrait
 
     public function __unset($name)
     {
+        static $processingName = "";
+
+        // Infinite call blocker:
+        // Do not allow the same "$name" enters this method consecutively
+        // via the last __unset() statement in this method.
+        if ($processingName === $name) {
+            return;
+        }
+
         if (is_callable(['parent', '__isset'])) {
             if (parent::__isset($name)) {
                 parent::__unset($name);
@@ -88,7 +97,9 @@ trait PropertyAliasTrait
         // - When using unset() on inaccessible object properties, the __unset() overloading method will be called, if declared.
         // This could lead to an infinite call.
 
+        $processingName = $name;
         unset($this->{$name});
+        $processingName = "";
     }
 
     /**
