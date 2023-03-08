@@ -8,7 +8,11 @@ Below is an example of creating an alias to `$this->foo`.
 
 ```php
 /**
- * @property $foo_alias = foo
+ * @property $my_alias = foo
+ *              ^
+ *              |
+ *      This is how you define an alias to "$foo".
+ *      Any valid PHP identifier will work, such as $한글
  */
  class MyClass {
     use \Selfiens\PropertyAliasTrait;
@@ -23,10 +27,10 @@ Then you can read/write properties via alias.
 $my = new MyClass();
 
 // read
-echo $my->foo_alias; // 'foo'
+echo $my->my_alias; // 'foo'
 
  // write
-$my->foo_alias = 'bar';
+$my->my_alias = 'bar';
 echo $my->foo; // 'bar';
 ```
 
