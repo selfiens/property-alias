@@ -69,9 +69,9 @@ trait PropertyAliasTrait
 
     public function __unset($name)
     {
+        // currently processing $name
         static $processingName = "";
 
-        // Infinite call blocker:
         // Do not allow the same "$name" enters this method consecutively
         // via the last __unset() statement in this method.
         if ($processingName === $name) {
@@ -92,11 +92,12 @@ trait PropertyAliasTrait
 
         // According to the PHP manual https://www.php.net/manual/en/function.unset.php
         // - It is possible to unset even object properties visible in current context.
-        // Unsetting a class property will introduce side effects, but let's do not block intended unset() calls.
+        // Unsetting a class property will introduce side effects, but let's do not block intentional unset() calls.
         // However, the following behavior requires more attention.
         // - When using unset() on inaccessible object properties, the __unset() overloading method will be called, if declared.
-        // This could lead to an infinite call.
+        // This could lead to an infinite-call.
 
+        // $processingName is an infinite-call guard
         $processingName = $name;
         unset($this->{$name});
         $processingName = "";
