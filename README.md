@@ -12,7 +12,7 @@ Below is an example of creating an alias to `$this->foo`.
  *              ^
  *              |
  *      This is how you define an alias to "$foo".
- *      Any valid PHP identifier will work, such as $한글
+ *      Valid PHP identifiers will work, including UTF-8 $한글.
  */
  class MyClass {
     use \Selfiens\PropertyAliasTrait;
