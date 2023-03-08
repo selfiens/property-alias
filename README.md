@@ -1,6 +1,6 @@
 # Property Alias
 
-[![PHPUnit Status](https://github.com/selfiens/property-alias/actions/workflows/phpunit.yml/badge.svg)](https://github.com/selfiens/property-alias/actions)
+[![PHPUnit Status](https://github.com/selfiens/property-alias/actions/workflows/phpunit.yml/badge.svg)](https://github.com/selfiens/property-alias/actions/workflows/phpunit.yml)
 
 This package enables you to create aliases for existing class properties with a simple ClassDoc setup.
 
