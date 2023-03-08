@@ -42,7 +42,7 @@ composer require selfiens/property-alias:^1.0
 
 ## Setup
 
-This package's `\Selfiens\PropertyAliasTrait` utilizes ClassDoc as a source of definitions.
+This package's `\Selfiens\PropertyAliasTrait` uses ClassDoc as the source of alias definitions.
 You can create aliases using the `@property` syntax, as shown in the following example:
 
 ```php
@@ -51,7 +51,7 @@ You can create aliases using the `@property` syntax, as shown in the following e
  */
 ```
 
-You can define as many aliases as you desire.
+You can define as many aliases as you desire. Aliases can point to the other aliases.
 
 ## Background
 

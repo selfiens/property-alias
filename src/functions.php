@@ -54,11 +54,12 @@ function mapKeyValue(iterable $iterable, callable $callable): array
  * An alias of array_filter
  * @param array $array
  * @param callable $callable
+ * @param int $mode
  * @return array
  */
-function filter(array $array, callable $callable): array
+function filter(array $array, callable $callable, int $mode = 0): array
 {
-    return \array_filter($array, $callable);
+    return \array_filter($array, $callable, $mode);
 }
 
 function pregMatcher(string $regexp, string $subject): array

@@ -24,9 +24,9 @@ trait PropertyAliasTrait
         }
 
         $this->preparePropertyAliasMap();
-        $property = $this->_property_aliases[$name] ?? null;
-        if ($property) {
-            return $this->{$property};
+        if ($this->isAliasedProperty($name)) {
+            $name = $this->unaliasPropertyName($name);
+            return $this->{$name};
         }
 
         // Instead of returning an arbitrary value such as null,
@@ -178,7 +178,8 @@ trait PropertyAliasTrait
             fn($defs) => mapKeyValue(
                 $defs,
                 fn($alias, $def) => [$alias, pregMatcher('/^\s*={1,3}\s*(\w+)/', $def['desc'])[1]]
-            )
+            ),
+            fn($defs) => filter($defs, fn($target, $alias) => $target != $alias, ARRAY_FILTER_USE_BOTH)
         );
     }
 
