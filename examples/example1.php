@@ -1,7 +1,5 @@
 <?php
 
-namespace Selfiens\PropertyAlias\Examples;
-
 use Selfiens\PropertyAlias\PropertyAliasTrait;
 
 /**
