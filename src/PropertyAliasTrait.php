@@ -144,6 +144,8 @@ trait PropertyAliasTrait
      */
     public function unaliasPropertyName(string $name): string
     {
+        $this->preparePropertyAliasMap();
+
         if (array_key_exists($name, $this->_property_aliases)) {
             $unaliased = $this->_property_aliases[$name];
             return $this->unaliasPropertyName($unaliased);

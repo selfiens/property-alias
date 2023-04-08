@@ -13,19 +13,20 @@ class PropertyAliasTester
 
     public string $foo = 'foo';
 }
+
 class BasicTest extends TestCase
 {
     public function testIo()
     {
-        $obj = new PropertyAliasTester();
+        $obj    = new PropertyAliasTester();
         $actual = $obj->bar;
         $this->assertEquals($obj->foo, $actual);
 
-        $rnd = uniqid();
+        $rnd      = uniqid();
         $obj->bar = $rnd;
         $this->assertEquals($rnd, $obj->foo);
 
-        $rnd = uniqid();
+        $rnd      = uniqid();
         $obj->foo = $rnd;
         $this->assertEquals($rnd, $obj->bar);
     }
@@ -47,5 +48,13 @@ class BasicTest extends TestCase
 
         // accessing undefined property
         $mock->undefined_property;
+    }
+
+    public function testUnaliasProperties()
+    {
+        $obj     = new PropertyAliasTester();
+        $payload = ['bar' => 'bar',];
+        $actual  = $obj->unaliasProperties($payload);
+        $this->assertEquals(['foo' => 'bar'], $actual);
     }
 }
