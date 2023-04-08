@@ -4,7 +4,7 @@
 
 /** @noinspection PhpUndefinedMethodInspection */
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Selfiens\PropertyAlias;
 
@@ -23,7 +23,6 @@ trait PropertyAliasTrait
             }
         }
 
-        $this->preparePropertyAliasMap();
         if ($this->isAliasedProperty($name)) {
             $name = $this->unaliasPropertyName($name);
             return $this->{$name};
@@ -36,9 +35,8 @@ trait PropertyAliasTrait
 
     public function __set($name, $value)
     {
-        $this->preparePropertyAliasMap();
-        $property = $this->_property_aliases[$name] ?? null;
-        if ($property) {
+        if ($this->isAliasedProperty($name)) {
+            $property = $this->unaliasPropertyName($name);
             $this->{$property} = $value;
             return;
         }
@@ -59,7 +57,6 @@ trait PropertyAliasTrait
             }
         }
 
-        $this->preparePropertyAliasMap();
         if ($this->isAliasedProperty($name)) {
             $name = $this->unaliasPropertyName($name);
         }
@@ -85,7 +82,6 @@ trait PropertyAliasTrait
             return;
         }
 
-        $this->preparePropertyAliasMap();
         if ($this->isAliasedProperty($name)) {
             $name = $this->unaliasPropertyName($name);
         }
@@ -105,11 +101,12 @@ trait PropertyAliasTrait
 
     /**
      * Whether the given name is an alias or not
-     * @param string $name
+     * @param  string  $name
      * @return bool
      */
     public function isAliasedProperty(string $name): bool
     {
+        $this->preparePropertyAliasMap();
         return array_key_exists($name, $this->_property_aliases);
     }
 
@@ -127,7 +124,7 @@ trait PropertyAliasTrait
      * Return an array with keys converted to their non-aliased target property names.
      * Note: This resolves multiple levels of aliasing. Aliased keys will be resolved to their final targets.
      *
-     * @param array<string|int,mixed> $kvp
+     * @param  array<string|int,mixed>  $kvp
      * @return array<string|int,mixed>
      */
     public function unaliasProperties(array $kvp): array
@@ -139,18 +136,17 @@ trait PropertyAliasTrait
      * Return non-aliased original property name.
      * Note: This resolves multiple levels of aliasing.
      *
-     * @param string $name
+     * @param  string  $name
      * @return string
      */
     public function unaliasPropertyName(string $name): string
     {
-        $this->preparePropertyAliasMap();
-
-        if (array_key_exists($name, $this->_property_aliases)) {
-            $unaliased = $this->_property_aliases[$name];
-            return $this->unaliasPropertyName($unaliased);
+        if (!$this->isAliasedProperty($name)) {
+            return $name;
         }
-        return $name;
+
+        $unaliased = $this->_property_aliases[$name];
+        return $this->unaliasPropertyName($unaliased); // to resolve multi-level aliasing
     }
 
     /**
@@ -164,7 +160,7 @@ trait PropertyAliasTrait
 
     /**
      * Parse ClassDoc data and return alias-target map
-     * @param array<string,array{type:string,desc:string}> $property_defs
+     * @param  array<string,array{type:string,desc:string}>  $property_defs
      * @return array<string,string> ['alias1'=>'target1', ...]
      */
     protected function parsePropertyDefs(array $property_defs): array
@@ -187,7 +183,7 @@ trait PropertyAliasTrait
 
     /**
      * Just to make it obvious that we are trying to return a probably undefined property.
-     * @param string $property
+     * @param  string  $property
      * @return mixed
      */
     protected function returnProbablyUndefinedProperty(string $property): mixed
