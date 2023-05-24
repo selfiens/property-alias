@@ -21,10 +21,10 @@ class AliasToNonExistingPropertyTest extends TestCase
     public function testGet()
     {
         $s = $this->getMockBuilder(BadAliasTestSubject::class)
-            ->onlyMethods(['returnProbablyUndefinedProperty'])
+            ->onlyMethods(['returnMemberField'])
             ->getMock();
 
-        $s->expects($this->once())->method('returnProbablyUndefinedProperty');
+        $s->expects($this->once())->method('returnMemberField');
 
         $s->alias_to_non_existing_property;
     }

@@ -17,20 +17,21 @@ trait PropertyAliasTrait
 
     public function __get($name)
     {
-        if (class_parents($this, false) && is_callable(['parent', '__isset'])) {
-            if (parent::__isset($name)) {
-                return parent::__get($name);
-            }
-        }
-
+        // First, resolve alias to original property
         if ($this->isAliasedProperty($name)) {
             $name = $this->unaliasPropertyName($name);
-            return $this->{$name};
         }
 
-        // Instead of returning an arbitrary value such as null,
-        // let the PHP native error happen.
-        return $this->returnProbablyUndefinedProperty($name);
+        // Now, the property is not an alias.
+        // Beyond this is up to parent class' __get/__set/__isset implementation.
+
+        // Parent implemented __get()?
+        if (class_parents($this, false) && is_callable(['parent', '__get'])) {
+            return parent::__get($name);
+        }
+
+        // Now it must be a member field, otherwise an error will occur.
+        return $this->returnMemberField($name);
     }
 
     public function __set($name, $value)
@@ -182,11 +183,11 @@ trait PropertyAliasTrait
     }
 
     /**
-     * Just to make it obvious that we are trying to return a probably undefined property.
+     * Just to make it obvious that we are trying to return a member field.
      * @param  string  $property
      * @return mixed
      */
-    protected function returnProbablyUndefinedProperty(string $property): mixed
+    protected function returnMemberField(string $property): mixed
     {
         return $this->{$property};
     }
