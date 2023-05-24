@@ -40,11 +40,11 @@ class BasicTest extends TestCase
         // Set up a mock to check whether the returnMemberField() method is called
         // when probably undefined property is accessed via __get.
         $mock = $this->getMockBuilder(PropertyAliasTester::class)
-            ->onlyMethods(['returnMemberField'])
+            ->onlyMethods(['returnProbablyUndefinedProperty'])
             ->getMock();
 
         // the returnMemberField method should be called once
-        $mock->expects($this->once())->method('returnMemberField');
+        $mock->expects($this->once())->method('returnProbablyUndefinedProperty');
 
         // accessing undefined property
         $mock->undefined_property;

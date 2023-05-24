@@ -27,5 +27,8 @@ class MultiLevelAliasTest extends TestCase
         $rnd = uniqid();
         $this->foo = $rnd;
         $this->assertEquals($rnd, $this->alias_of_alias_of_alias_of_foo);
+
+        unset($this->alias_of_alias_of_alias_of_foo);
+        $this->assertFalse(isset($this->alias_of_alias_of_alias_of_foo));
     }
 }

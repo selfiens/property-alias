@@ -1,7 +1,5 @@
 <?php
 
-/** @noinspection PhpMultipleClassDeclarationsInspection */
-
 /** @noinspection PhpUndefinedMethodInspection */
 
 declare(strict_types = 1);
@@ -17,7 +15,7 @@ trait PropertyAliasTrait
 
     public function __get($name)
     {
-        // First, resolve alias to original property
+        // First, try resolve alias to original property
         if ($this->isAliasedProperty($name)) {
             $name = $this->unaliasPropertyName($name);
         }
@@ -30,74 +28,52 @@ trait PropertyAliasTrait
             return parent::__get($name);
         }
 
-        // Now it must be a member field, otherwise an error will occur.
-        return $this->returnMemberField($name);
+        // Let the PHP handle
+        return $this->returnProbablyUndefinedProperty($name);
     }
 
     public function __set($name, $value)
     {
         if ($this->isAliasedProperty($name)) {
-            $property = $this->unaliasPropertyName($name);
-            $this->{$property} = $value;
-            return;
+            $name = $this->unaliasPropertyName($name);
         }
 
-        if (is_callable(['parent', '__set'])) {
+        if (class_parents($this, false) && is_callable(['parent', '__set'])) {
             parent::__set($name, $value);
             return;
         }
 
+        // Let the PHP handle
         $this->{$name} = $value;
     }
 
     public function __isset($name)
     {
-        if (is_callable(['parent', '__isset'])) {
-            if (parent::__isset($name)) {
-                return true;
-            }
-        }
-
         if ($this->isAliasedProperty($name)) {
             $name = $this->unaliasPropertyName($name);
         }
 
+        if (class_parents($this, false) && is_callable(['parent', '__isset'])) {
+            return parent::__isset($name);
+        }
+
+        // Let the PHP handle
         return isset($this->{$name});
     }
 
     public function __unset($name)
     {
-        // currently processing $name
-        static $processingName = "";
-
-        if (is_callable(['parent', '__isset'])) {
-            if (parent::__isset($name)) {
-                parent::__unset($name);
-                return;
-            }
-        }
-
-        // Do not allow the same "$name" enters this method consecutively
-        // via the last __unset() statement in this method.
-        if ($processingName === $name) {
-            return;
-        }
-
         if ($this->isAliasedProperty($name)) {
             $name = $this->unaliasPropertyName($name);
         }
 
-        // According to the PHP manual https://www.php.net/manual/en/function.unset.php
-        // - It is possible to unset even object properties visible in current context.
-        // Unsetting a class property will introduce side effects, but let's do not block intentional unset() calls.
-        // However, the following behavior requires more attention.
-        // - When using unset() on inaccessible object properties, the __unset() overloading method will be called, if declared.
-        // This could lead to an infinite-call.
+        if (class_parents($this, false) && is_callable(['parent', '__unset'])) {
+            parent::__unset($name);
+            return;
+        }
 
-        // $processingName is an infinite-call guard
-        $processingName = $name;
+        // Let the PHP handle
         unset($this->{$name});
-        $processingName = "";
     }
 
     /**
@@ -183,11 +159,11 @@ trait PropertyAliasTrait
     }
 
     /**
-     * Just to make it obvious that we are trying to return a member field.
+     * For unit-tests to detect certain scenario
      * @param  string  $property
      * @return mixed
      */
-    protected function returnMemberField(string $property): mixed
+    protected function returnProbablyUndefinedProperty(string $property): mixed
     {
         return $this->{$property};
     }
