@@ -14,7 +14,7 @@ trait PropertyAliasTrait
     /**
      * @var array<string,string>|null
      */
-    private ?array $_property_aliases = null;
+    private ?array $property_aliases = null;
 
     /**
      * @param string $name
@@ -23,19 +23,13 @@ trait PropertyAliasTrait
     public function __get($name)
     {
         // First, try resolve alias to original property
-        if ($this->isAliasedProperty($name)) {
-            $name = $this->unaliasPropertyName($name);
-        }
+        $name = $this->resolveAliasedPropertyName($name);
 
-        // Now, the property is not an alias.
-        // Beyond this is up to parent class' __get/__set/__isset implementation.
-
-        // Parent implemented __get()?
+        // Parent implements __get()?
         if (class_parents($this, false) && is_callable([parent::class, '__get'])) {
             return parent::__get($name); // @phpstan-ignore class.noParent
         }
 
-        // Let the PHP handle
         return $this->returnNativeProperty($name);
     }
 
@@ -46,105 +40,83 @@ trait PropertyAliasTrait
      */
     public function __set($name, $value)
     {
-        if ($this->isAliasedProperty($name)) {
-            $name = $this->unaliasPropertyName($name);
-        }
+        $name = $this->resolveAliasedPropertyName($name);
 
         if (class_parents($this, false) && is_callable([parent::class, '__set'])) {
             parent::__set($name, $value); // @phpstan-ignore class.noParent
             return;
         }
 
-        // Let the PHP handle
         $this->{$name} = $value;
     }
 
+    /**
+     * @param string $name
+     * @return bool
+     */
     public function __isset($name)
     {
-        if ($this->isAliasedProperty($name)) {
-            $name = $this->unaliasPropertyName($name);
-        }
+        $name = $this->resolveAliasedPropertyName($name);
 
         if (class_parents($this, false) && is_callable([parent::class, '__isset'])) {
             return parent::__isset($name);
         }
 
-        // Let the PHP handle
         return isset($this->{$name});
     }
 
+    /**
+     * @param string $name
+     * @return void
+     */
     public function __unset($name)
     {
-        if ($this->isAliasedProperty($name)) {
-            $name = $this->unaliasPropertyName($name);
-        }
+        $name = $this->resolveAliasedPropertyName($name);
 
         if (class_parents($this, false) && is_callable([parent::class, '__unset'])) {
             parent::__unset($name);
             return;
         }
 
-        // Let the PHP handle
         unset($this->{$name});
+    }
+
+    public function resolveAliasedPropertyName(string $name): string
+    {
+        return ($this->isAliasedPropertyName($name))
+            ? $this->unaliasPropertyName($name)
+            : $name;
     }
 
     /**
      * Whether the given name is an alias or not
-     * @param string $name
-     * @return bool
      */
-    public function isAliasedProperty(string $name): bool
+    public function isAliasedPropertyName(string $name): bool
     {
         $this->preparePropertyAliasMap();
-        return array_key_exists($name, $this->_property_aliases);
-    }
-
-    /**
-     * Return defined aliases and their target property names
-     * @return array<string,string> alias to target property map
-     */
-    public function aliasedProperties(): array
-    {
-        $this->preparePropertyAliasMap();
-        return $this->_property_aliases;
-    }
-
-    /**
-     * Return an array with keys converted to their non-aliased target property names.
-     * Note: This resolves multiple levels of aliasing. Aliased keys will be resolved to their final targets.
-     *
-     * @param array<string|int,mixed> $kvp
-     * @return array<string|int,mixed>
-     */
-    public function unaliasProperties(array $kvp): array
-    {
-        return mapKeyValue($kvp, fn($name, $value) => [$this->unaliasPropertyName($name), $value]);
+        return array_key_exists($name, $this->property_aliases);
     }
 
     /**
      * Return non-aliased original property name.
      * Note: This resolves multiple levels of aliasing.
-     *
-     * @param string $name
-     * @return string
      */
     public function unaliasPropertyName(string $name): string
     {
-        if (!$this->isAliasedProperty($name)) {
+        if (!$this->isAliasedPropertyName($name)) {
             return $name;
         }
 
-        $unaliased = $this->_property_aliases[$name];
+        $unaliased = $this->property_aliases[$name];
         return $this->unaliasPropertyName($unaliased); // to resolve multi-level aliasing
     }
 
     /**
      * Parse ClassDoc and create an alias-target map
-     * @return void
      */
     protected function preparePropertyAliasMap(): void
     {
-        $this->_property_aliases ??= $this->parsePropertyDefs((new ClassDocPropertyReader($this))->properties());
+        $this->property_aliases ??= $this->parsePropertyDefs((new ClassDocPropertyReader($this))->properties());
     }
 
     /**
@@ -171,9 +143,7 @@ trait PropertyAliasTrait
     }
 
     /**
-     * For unit-tests to detect certain scenario
-     * @param string $property
-     * @return mixed
+     * For unit-tests to override for certain scenarios
      */
     protected function returnNativeProperty(string $property): mixed
     {

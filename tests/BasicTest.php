@@ -54,12 +54,4 @@ class BasicTest extends TestCase
         $actual = $obj->undefined_property;
         $this->assertEquals("UNDEFINED(UNIT-TEST)", $actual);
     }
-
-    public function testUnaliasProperties()
-    {
-        $obj     = new PropertyAliasTester();
-        $payload = ['bar' => 'bar',];
-        $actual  = $obj->unaliasProperties($payload);
-        $this->assertEquals(['foo' => 'bar'], $actual);
-    }
 }
