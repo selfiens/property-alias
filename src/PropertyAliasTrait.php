@@ -2,7 +2,7 @@
 
 /** @noinspection PhpUndefinedMethodInspection */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Selfiens\PropertyAlias;
 
@@ -11,8 +11,15 @@ namespace Selfiens\PropertyAlias;
  */
 trait PropertyAliasTrait
 {
+    /**
+     * @var array<string,string>|null
+     */
     private ?array $_property_aliases = null;
 
+    /**
+     * @param string $name
+     * @return mixed
+     */
     public function __get($name)
     {
         // First, try resolve alias to original property
@@ -24,22 +31,27 @@ trait PropertyAliasTrait
         // Beyond this is up to parent class' __get/__set/__isset implementation.
 
         // Parent implemented __get()?
-        if (class_parents($this, false) && is_callable(['parent', '__get'])) {
-            return parent::__get($name);
+        if (class_parents($this, false) && is_callable([parent::class, '__get'])) {
+            return parent::__get($name); // @phpstan-ignore class.noParent
         }
 
         // Let the PHP handle
-        return $this->returnProbablyUndefinedProperty($name);
+        return $this->returnNativeProperty($name);
     }
 
+    /**
+     * @param string $name
+     * @param mixed  $value
+     * @return void
+     */
     public function __set($name, $value)
     {
         if ($this->isAliasedProperty($name)) {
             $name = $this->unaliasPropertyName($name);
         }
 
-        if (class_parents($this, false) && is_callable(['parent', '__set'])) {
-            parent::__set($name, $value);
+        if (class_parents($this, false) && is_callable([parent::class, '__set'])) {
+            parent::__set($name, $value); // @phpstan-ignore class.noParent
             return;
         }
 
@@ -53,7 +65,7 @@ trait PropertyAliasTrait
             $name = $this->unaliasPropertyName($name);
         }
 
-        if (class_parents($this, false) && is_callable(['parent', '__isset'])) {
+        if (class_parents($this, false) && is_callable([parent::class, '__isset'])) {
             return parent::__isset($name);
         }
 
@@ -67,7 +79,7 @@ trait PropertyAliasTrait
             $name = $this->unaliasPropertyName($name);
         }
 
-        if (class_parents($this, false) && is_callable(['parent', '__unset'])) {
+        if (class_parents($this, false) && is_callable([parent::class, '__unset'])) {
             parent::__unset($name);
             return;
         }
@@ -78,7 +90,7 @@ trait PropertyAliasTrait
 
     /**
      * Whether the given name is an alias or not
-     * @param  string  $name
+     * @param string $name
      * @return bool
      */
     public function isAliasedProperty(string $name): bool
@@ -101,7 +113,7 @@ trait PropertyAliasTrait
      * Return an array with keys converted to their non-aliased target property names.
      * Note: This resolves multiple levels of aliasing. Aliased keys will be resolved to their final targets.
      *
-     * @param  array<string|int,mixed>  $kvp
+     * @param array<string|int,mixed> $kvp
      * @return array<string|int,mixed>
      */
     public function unaliasProperties(array $kvp): array
@@ -113,7 +125,7 @@ trait PropertyAliasTrait
      * Return non-aliased original property name.
      * Note: This resolves multiple levels of aliasing.
      *
-     * @param  string  $name
+     * @param string $name
      * @return string
      */
     public function unaliasPropertyName(string $name): string
@@ -137,7 +149,7 @@ trait PropertyAliasTrait
 
     /**
      * Parse ClassDoc data and return alias-target map
-     * @param  array<string,array{type:string,desc:string}>  $property_defs
+     * @param array<string,array{type:string,desc:string}> $property_defs
      * @return array<string,string> ['alias1'=>'target1', ...]
      */
     protected function parsePropertyDefs(array $property_defs): array
@@ -152,19 +164,20 @@ trait PropertyAliasTrait
             fn($defs) => filter($defs, fn($def) => preg_match('/^\s*={1,3}\s*[a-zA-Z]/', $def['desc'])),
             fn($defs) => mapKeyValue(
                 $defs,
-                fn($alias, $def) => [$alias, pregMatcher('/^\s*={1,3}\s*(\w+)/', $def['desc'])[1]]
+                fn($alias, $def) => [$alias, pregMatcher('/^\s*={1,3}\s*(\w+)/', $def['desc'])[1]],
             ),
-            fn($defs) => filter($defs, fn($target, $alias) => $target != $alias, ARRAY_FILTER_USE_BOTH)
+            fn($defs) => filter($defs, fn($target, $alias) => $target != $alias, ARRAY_FILTER_USE_BOTH),
         );
     }
 
     /**
      * For unit-tests to detect certain scenario
-     * @param  string  $property
+     * @param string $property
      * @return mixed
      */
-    protected function returnProbablyUndefinedProperty(string $property): mixed
+    protected function returnNativeProperty(string $property): mixed
     {
+        // undefined prop will emit WARNING or ERROR
         return $this->{$property};
     }
 }

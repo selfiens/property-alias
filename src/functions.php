@@ -10,9 +10,7 @@ namespace Selfiens\PropertyAlias;
 
 /**
  * Pass data through functions
- * @param mixed $data
- * @param ...$fns
- * @return mixed
+ * @param callable ...$fns
  */
 function pipe(mixed $data, ...$fns): mixed
 {
@@ -21,9 +19,9 @@ function pipe(mixed $data, ...$fns): mixed
 
 /**
  * An alias of array_map with different signature
- * @param array $array
- * @param callable $callable
- * @return array
+ * @param array<mixed> $array
+ * @param callable     $callable
+ * @return array<mixed>
  */
 function map(array $array, callable $callable): array
 {
@@ -32,9 +30,9 @@ function map(array $array, callable $callable): array
 
 /**
  * Maps key and value
- * @param iterable $iterable
- * @param callable $callable fn($key, $value)
- * @return array
+ * @param iterable<string|int,mixed>                                $iterable
+ * @param callable(string|int,mixed):(array{string|int|null,mixed}) $callable fn($key, $value)
+ * @return array<string|int,mixed>
  */
 function mapKeyValue(iterable $iterable, callable $callable): array
 {
@@ -52,16 +50,17 @@ function mapKeyValue(iterable $iterable, callable $callable): array
 
 /**
  * An alias of array_filter
- * @param array $array
- * @param callable $callable
- * @param int $mode
- * @return array
+ * @param array<mixed> $array
+ * @return array<mixed>
  */
 function filter(array $array, callable $callable, int $mode = 0): array
 {
     return \array_filter($array, $callable, $mode);
 }
 
+/**
+ * @return array<string>
+ */
 function pregMatcher(string $regexp, string $subject): array
 {
     if (preg_match($regexp, $subject, $matches)) {

@@ -7,9 +7,19 @@ use PHPUnit\Framework\TestCase;
 /**
  * @property $alias_to_non_existing_property == non_existing_property
  */
+#[\AllowDynamicProperties]
 class BadAliasTestSubject
 {
     use PropertyAliasTrait;
+
+    public function returnNativeProperty(string $property): mixed
+    {
+        if (property_exists($this, $property)) {
+            return $this->{$property};
+        }
+
+        return "UNDEFINED(UNIT-TEST)";
+    }
 }
 
 class AliasToNonExistingPropertyTest extends TestCase
@@ -20,13 +30,9 @@ class AliasToNonExistingPropertyTest extends TestCase
      */
     public function testGet()
     {
-        $s = $this->getMockBuilder(BadAliasTestSubject::class)
-            ->onlyMethods(['returnProbablyUndefinedProperty'])
-            ->getMock();
-
-        $s->expects($this->once())->method('returnProbablyUndefinedProperty');
-
-        $s->alias_to_non_existing_property;
+        $obj    = new BadAliasTestSubject();
+        $actual = $obj->alias_to_non_existing_property;
+        $this->assertEquals("UNDEFINED(UNIT-TEST)", $actual);
     }
 
     /**
@@ -35,7 +41,7 @@ class AliasToNonExistingPropertyTest extends TestCase
      */
     public function testSet()
     {
-        $s = new BadAliasTestSubject();
+        $s                                 = new BadAliasTestSubject();
         $s->alias_to_non_existing_property = 'unit-test';
         $this->assertEquals('unit-test', $s->non_existing_property);
     }

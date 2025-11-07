@@ -6,12 +6,24 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @property $bar==foo
+ * @property $goo==zoo
  */
+#[\AllowDynamicProperties]
 class PropertyAliasTester
 {
     use PropertyAliasTrait;
 
-    public string $foo = 'foo';
+    public string          $foo = 'foo';
+    public string|int|null $zoo = 'zoo';
+
+    protected function returnNativeProperty(string $property): mixed
+    {
+        if (property_exists($this, $property)) {
+            return $this->{$property};
+        }
+
+        return "UNDEFINED(UNIT-TEST)";
+    }
 }
 
 class BasicTest extends TestCase
@@ -37,17 +49,10 @@ class BasicTest extends TestCase
      */
     public function testUndefined()
     {
-        // Set up a mock to check whether the returnMemberField() method is called
-        // when probably undefined property is accessed via __get.
-        $mock = $this->getMockBuilder(PropertyAliasTester::class)
-            ->onlyMethods(['returnProbablyUndefinedProperty'])
-            ->getMock();
-
-        // the returnMemberField method should be called once
-        $mock->expects($this->once())->method('returnProbablyUndefinedProperty');
-
         // accessing undefined property
-        $mock->undefined_property;
+        $obj    = new PropertyAliasTester();
+        $actual = $obj->undefined_property;
+        $this->assertEquals("UNDEFINED(UNIT-TEST)", $actual);
     }
 
     public function testUnaliasProperties()

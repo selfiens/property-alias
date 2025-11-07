@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * @property $alias_to_self == alias_to_self
  */
+#[\AllowDynamicProperties]
 class LoopBackAliasTestSubject
 {
     use PropertyAliasTrait;

@@ -17,9 +17,9 @@ class ClassDocPropertyReader
     private array $properties;
 
     /**
-     * @param  $classNameOrInstance
+     * @param object|class-string $classNameOrInstance
      */
-    public function __construct($classNameOrInstance)
+    public function __construct(object|string $classNameOrInstance)
     {
         $ref = new ReflectionClass($classNameOrInstance);
 
@@ -34,7 +34,7 @@ class ClassDocPropertyReader
             )) {
                 foreach ($matches as $match) {
                     $defs[trim($match['alias'])] = [
-                        'type' => trim($match['type'] ?? ''),
+                        'type' => trim($match['type'] ?? ''), // @phpstan-ignore nullCoalesce.offset (safeguard)
                         'desc' => trim($match['desc'] ?? ''),
                     ];
                 }
